@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MesinRequest;
 use App\Mesin;
 use Illuminate\Http\Request;
 
@@ -12,9 +13,10 @@ class MesinController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $data = Mesin::all();
+        return view('mesin.index', compact('data'));
     }
 
     /**
@@ -24,7 +26,9 @@ class MesinController extends Controller
      */
     public function create()
     {
-        //
+        return view('mesin.create', [
+            'mesin' => new Mesin()
+        ]);
     }
 
     /**
@@ -33,9 +37,10 @@ class MesinController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(MesinRequest $request)
     {
-        //
+        Mesin::create($request->all());
+        return redirect('/mesin');
     }
 
     /**
@@ -57,7 +62,7 @@ class MesinController extends Controller
      */
     public function edit(Mesin $mesin)
     {
-        //
+        return view('mesin.edit', compact('mesin'));
     }
 
     /**
@@ -67,9 +72,10 @@ class MesinController extends Controller
      * @param  \App\Mesin  $mesin
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Mesin $mesin)
+    public function update(MesinRequest $request, Mesin $mesin)
     {
-        //
+        $mesin->update($request->all());
+        return redirect('/mesin');
     }
 
     /**
@@ -80,6 +86,7 @@ class MesinController extends Controller
      */
     public function destroy(Mesin $mesin)
     {
-        //
+        $mesin->delete();
+        return redirect('/mesin');
     }
 }
