@@ -38,9 +38,7 @@ class TarikData extends Command
      */
     public function handle()
     {
-
         $mesin = Mesin::all();
-
         $request = "<GetAttLog><ArgComKey xsi:type=\"xsd:integer\">0</ArgComKey><Arg><PIN xsi:type=\"xsd:integer\">All</PIN></Arg></GetAttLog>";
 
         foreach ($mesin as $m) {
@@ -58,22 +56,24 @@ class TarikData extends Command
             fputs($fp, "Content-Length: " . strlen($request) . "\r\n\r\n");
             fputs($fp, $request . "\r\n");
 
-            $xml = "";
+            $response = "";
 
             while (!feof($fp)) {
-                $xml .= fgets($fp, 1024);
+                $response .= fgets($fp, 1024);
             }
 
             fclose($fp);
 
-            $data = simplexml_load_string($xml);
-            $ret = [];
+            $position   = strpos($response, '<GetAttLogResponse>');
+            $xml        = substr($response, $position);
+            $data       = simplexml_load_string($xml);
+            $ret        = [];
 
             foreach ($data->Row as $row) {
                 $ret[] = (array) $row;
             }
 
-            $this->table(['PIN', 'DateTime', 'Verified', 'Status'], $ret);
+            $this->table(['PIN', 'DateTime', 'Verified', 'Status', 'WorkCode'], $ret);
         }
     }
 }
